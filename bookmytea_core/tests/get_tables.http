@@ -1,0 +1,17 @@
+# Test your FastAPI endpoints
+
+POST http://127.0.0.1:5000/api/v1/jsonrpc/client
+Accept: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": "1",
+  "method": "get_available_tables",
+  "params": {
+    "room_id": 1,
+    "date": "2024-05-12",
+    "start_time": "04:10:00",
+    "duration": 1
+  }
+}
+###

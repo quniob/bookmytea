@@ -1,0 +1,12 @@
+# Test your FastAPI endpoints
+
+POST http://127.0.0.1:5000/api/v1/jsonrpc/admin
+Accept: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": "0",
+  "method": "list_bookings",
+  "params": {}
+}
+###

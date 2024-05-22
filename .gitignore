@@ -1,0 +1,4 @@
+./bookmytea_core/.venv/
+./bookmytea_auth/.venv/
+bookmytea_core/app/.env
+.venv/

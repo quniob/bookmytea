@@ -1,0 +1,14 @@
+# Test your FastAPI endpoints
+
+POST http://127.0.0.1:5000/api/v1/jsonrpc/auth
+
+{
+  "jsonrpc": "2.0",
+  "id": "0",
+  "method": "verify_user",
+  "params": {
+    "request": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJleHAiOjE3MTYxNTAzOTJ9.scRfRLu-lzCoN4JpPkZft7bD6FdHAQi8Gw-AvExCJYE"
+    }
+  }
+}

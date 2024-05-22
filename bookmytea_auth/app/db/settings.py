@@ -1,0 +1,1 @@
+JWT_SECRET = "x29803ytj237xt601wer1-iojwet"
