@@ -1,3 +1,5 @@
+from uuid import UUID
+
 import fastapi_jsonrpc as jsonrpc
 from pydantic import BaseModel
 from bookmytea_auth.app.core.jwt import register, login, verify_token
@@ -8,7 +10,7 @@ class LoginResponse(BaseModel):
 
 
 class VerifyResponse(BaseModel):
-    user_id: int
+    user_id: str
 
 
 class RegistrationError(jsonrpc.BaseError):
@@ -35,10 +37,11 @@ api_entrypoint = jsonrpc.Entrypoint(
 
 
 @api_entrypoint.method(errors=[RegistrationError])
-def register_user(email: str, password: str) -> bool:
-    result = register(email, password)
+def register_user(email: str, password: str, uuid: str) -> LoginResponse:
+    result = register(email, password, uuid)
     if result:
-        return True
+        token = login(email, password)
+        return LoginResponse(token=token)
     raise RegistrationError
 
 

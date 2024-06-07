@@ -1,4 +1,6 @@
 import datetime as datetime
+from typing import Optional
+from uuid import UUID
 
 import fastapi_jsonrpc as jsonrpc
 import bookmytea_core.app.db.db as db
@@ -48,6 +50,12 @@ class Room(BaseModel):
         orm_mode = True
 
 
+class User(BaseModel):
+    id: UUID
+    email: str
+    telegram: str | None
+
+
 client_entrypoint = jsonrpc.Entrypoint('/api/v1/jsonrpc/client')
 
 
@@ -75,3 +83,14 @@ def book_tables(tables: list[BookingRequest]) -> list[BookingResponse]:
 @client_entrypoint.method()
 def get_booking_status(booking_id: int) -> str:
     return db.get_booking_status(booking_id)
+
+
+@client_entrypoint.method()
+def get_user(user_id: str) -> User:
+    user = db.get_user(UUID(user_id))
+    return User(**user)
+
+
+@client_entrypoint.method()
+def add_user(uuid: UUID, email: str) -> bool:
+    return db.add_user(uuid, email)

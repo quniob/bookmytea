@@ -1,5 +1,6 @@
 import datetime as datetime
 from typing import Optional
+from uuid import UUID
 
 import fastapi_jsonrpc as jsonrpc
 import bookmytea_core.app.db.db as db
@@ -25,6 +26,12 @@ class BookingFilter(BaseModel):
     user: Optional[int] = None
     with_master: Optional[bool] = None
     status: Optional[str] = None
+
+
+class User(BaseModel):
+    id: UUID
+    email: str
+    telegram: Optional[str] = None
 
 
 @admin_entrypoint.method()

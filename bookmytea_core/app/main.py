@@ -11,4 +11,4 @@ app.bind_entrypoint(admin_entrypoint)
 if __name__ == '__main__':
     import uvicorn
 
-    uvicorn.run('main:app', port=5000, access_log=False)
+    uvicorn.run('main:app', port=5001, access_log=False)

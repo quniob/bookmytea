@@ -1,9 +1,12 @@
-from os import getenv
+import os
+from dotenv import load_dotenv, find_dotenv
 
+load_dotenv(find_dotenv())
 
-PONY_PROVIDER = "postgres"
-POSTGRES_USER = "postgres"
-POSTGRES_PASSWORD = "postgres"
-POSTGRES_HOST = "localhost"
-POSTGRES_DATABASE = "postgres"
-AUTO_CONFIRM = "true"
+PONY_PROVIDER = os.getenv("PONY_PROVIDER")
+POSTGRES_USER = os.getenv("POSTGRES_USER")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT")
+POSTGRES_DATABASE = os.getenv("POSTGRES_DATABASE")
+AUTO_CONFIRM = os.getenv("AUTO_CONFIRM")

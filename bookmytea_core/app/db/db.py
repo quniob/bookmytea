@@ -73,6 +73,17 @@ def confirm_booking(booking_id) -> bool:
     return True
 
 
+@db_session
+def add_user(uuid: UUID, email: str):
+    User(id=uuid, email=email)
+    return True
+
+
+@db_session
+def get_user(user_id):
+    return User[user_id].to_dict()
+
+
 if __name__ == '__main__':
     #    print(add_room('test1', 'test1'))
     #    print(add_table(1, 1, 1, 1))

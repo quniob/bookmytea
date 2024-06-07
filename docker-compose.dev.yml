@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  postgres:
+  postgres_core:
     image: postgres:latest
-    container_name: postgres
+    container_name: postgres_core
     ports:
       - "5432:5432"
     environment:
@@ -11,7 +11,19 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres_core:/var/lib/postgresql/data
+
+  postgres_auth:
+    image: postgres:latest
+    container_name: postgres_auth
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_auth:/var/lib/postgresql/data
 
   redis:
     image: redis:latest
@@ -20,4 +32,5 @@ services:
       - "6379:6379"
 
 volumes:
-  postgres:
+  postgres_core:
+  postgres_auth:

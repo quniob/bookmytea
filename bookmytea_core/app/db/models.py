@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from bookmytea_core.app.db import settings
 from enum import Enum
+from uuid import UUID
 
 from pony.orm import Database, Required, Set, PrimaryKey, Optional, db_session, select
 
@@ -21,7 +22,7 @@ class Room(db.Entity):
 
 
 class User(db.Entity):
-    id = PrimaryKey(int, auto=True)
+    id = PrimaryKey(UUID)
     email = Required(str)
     telegram = Optional(str, nullable=True)
     bookings = Set("Booking")
@@ -51,5 +52,5 @@ class Booking(db.Entity):
 
 
 db.bind(provider=settings.PONY_PROVIDER, user=settings.POSTGRES_USER,
-        password=settings.POSTGRES_PASSWORD, host=settings.POSTGRES_HOST, database=settings.POSTGRES_DATABASE)
+        password=settings.POSTGRES_PASSWORD, host=settings.POSTGRES_HOST, database=settings.POSTGRES_DATABASE, port=settings.POSTGRES_PORT)
 db.generate_mapping(create_tables=True)
