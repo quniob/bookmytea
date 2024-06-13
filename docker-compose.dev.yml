@@ -30,7 +30,10 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+    volumes:
+      - redis:/data
 
 volumes:
   postgres_core:
   postgres_auth:
+  redis:

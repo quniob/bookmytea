@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bookmytea{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+        }
+
+        .avatar {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+        }
+
+        .profile-avatar {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        article {
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        article img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="container-fluid">
+        <ul>
+            <li><strong>Bookmytea</strong></li>
+        </ul>
+        <ul class="nav-right">
+            {% if user %}
+            <li>
+                <a href="{{ url_for('me') }}">
+                    <img src="https://avatar.iran.liara.run/public/40" alt="Avatar" class="avatar">
+                </a>
+            </li>
+            <li><a href="{{ url_for('logout') }}">Выход</a></li>
+            {% else %}
+            <li><a href="{{ url_for('login') }}">Вход</a></li>
+            <li><a href="{{ url_for('register') }}">Регистрация</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
+<main class="container">
+    {% block content %}
+    {% endblock %}
+</main>
+<footer>
+    <small>&copy; 2024 Bookmytea. Все права защищены.</small>
+</footer>
+</body>
+</html>

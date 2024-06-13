@@ -12,10 +12,12 @@ class BookingStatus(str, Enum):
     PENDING = 'pending'
     CONFIRMED = 'confirmed'
     CANCELLED = 'cancelled'
+    COMPLETE = 'complete'
 
 
 class Room(db.Entity):
     id = PrimaryKey(int, auto=True)
+    image = Optional(str, nullable=True, default=None)
     name = Required(str)
     desc = Optional(str)
     tables = Set("Table")
@@ -24,7 +26,7 @@ class Room(db.Entity):
 class User(db.Entity):
     id = PrimaryKey(UUID)
     email = Required(str)
-    telegram = Optional(str, nullable=True)
+    avatar = Optional(str, nullable=True, default="https://avatar.iran.liara.run/public/40")
     bookings = Set("Booking")
 
 
@@ -39,7 +41,7 @@ class Table(db.Entity):
 
 class Booking(db.Entity):
     id = PrimaryKey(int, auto=True)
-    tables = Set("Table")
+    table = Required("Table")  # Нужно Required
     user = Required("User")
     with_master = Required(bool, default=False)
     additional_info = Optional(str)
@@ -52,5 +54,6 @@ class Booking(db.Entity):
 
 
 db.bind(provider=settings.PONY_PROVIDER, user=settings.POSTGRES_USER,
-        password=settings.POSTGRES_PASSWORD, host=settings.POSTGRES_HOST, database=settings.POSTGRES_DATABASE, port=settings.POSTGRES_PORT)
+        password=settings.POSTGRES_PASSWORD, host=settings.POSTGRES_HOST, database=settings.POSTGRES_DATABASE,
+        port=settings.POSTGRES_PORT)
 db.generate_mapping(create_tables=True)

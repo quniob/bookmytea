@@ -4,6 +4,7 @@ from uuid import UUID
 
 import fastapi_jsonrpc as jsonrpc
 import bookmytea_core.app.db.db as db
+import bookmytea_core.app.db.redis_db as redis
 from pydantic import BaseModel
 
 admin_entrypoint = jsonrpc.Entrypoint('/api/v1/jsonrpc/admin')
@@ -57,3 +58,13 @@ def cancel_booking(booking_id: int) -> bool:
 @admin_entrypoint.method()
 def confirm_booking(booking_id: int) -> bool:
     return db.confirm_booking(booking_id)
+
+
+@admin_entrypoint.method()
+def get_auto_confirm() -> bool:
+    return redis.get_auto_confirm()
+
+
+@admin_entrypoint.method()
+def toggle_auto_confirm() -> None:
+    return redis.toggle_auto_confirm()

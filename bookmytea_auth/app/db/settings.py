@@ -10,3 +10,4 @@ POSTGRES_HOST = os.environ.get("POSTGRES_HOST")
 POSTGRES_PORT = os.environ.get("POSTGRES_PORT")
 POSTGRES_DATABASE = os.environ.get("POSTGRES_DATABASE")
 JWT_SECRET = "x29803ytj237xt601wer1-iojwet"
+ADMIN_MAIL = os.environ.get("ADMIN_MAIL")

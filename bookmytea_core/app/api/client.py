@@ -21,7 +21,7 @@ class Booking(BaseModel):
     start_time: datetime.datetime
     end_time: datetime.datetime
     status: str
-    deadline: datetime.datetime
+    confirmation_deadline: datetime.datetime
     created_at: datetime.datetime
     updated_at: datetime.datetime
 
@@ -43,17 +43,18 @@ class BookingResponse(BaseModel):
 
 class Room(BaseModel):
     id: int
+    image: str
     name: str
     desc: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class User(BaseModel):
     id: UUID
     email: str
-    telegram: str | None
+    avatar: str | None
 
 
 client_entrypoint = jsonrpc.Entrypoint('/api/v1/jsonrpc/client')
@@ -94,3 +95,8 @@ def get_user(user_id: str) -> User:
 @client_entrypoint.method()
 def add_user(uuid: UUID, email: str) -> bool:
     return db.add_user(uuid, email)
+
+
+@client_entrypoint.method()
+def cancel_booking(booking_id: int) -> bool:
+    return db.cancel_booking(booking_id)

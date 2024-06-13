@@ -1,7 +1,9 @@
-from flask import Flask, render_template, redirect, url_for, session
+from datetime import datetime, timedelta
+
+from flask import Flask, render_template, redirect, url_for, session, jsonify, request
 import os
 import rpc
-from forms import RegisterForm, LoginForm
+from forms import RegisterForm, LoginForm, BookingForm
 from functools import wraps
 from uuid import uuid4
 
@@ -15,18 +17,31 @@ def login_required(f):
         if 'token' not in session:
             return redirect(url_for('login'))
         try:
-            user_id = rpc.auth("verify_user", {"token": session['token']})
+            auth_response = rpc.auth("verify_user", {"token": session['token']})
+            user_id = auth_response['user_id']
+            admin = auth_response['admin']
         except Exception as e:
+            session.pop('token', None)
             return redirect(url_for('login'))
-        return f(user_id['user_id'], *args, **kwargs)
+        return f(user_id, admin == 'true', *args, **kwargs)
 
     return decorated_function
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if 'token' in session:
+        try:
+            user_id = rpc.auth("verify_user", {"token": session['token']})
+        except Exception as e:
+            session.pop('token', None)
+            return redirect(url_for('login'))
         return redirect(url_for('me'))
     if form.validate_on_submit():
         params = {
@@ -44,14 +59,14 @@ def login():
 
 @app.route('/logout')
 @login_required
-def logout(user_id: str):
+def logout(user_id: str, admin: bool):
     session.pop('token', None)
     return redirect(url_for('login'))
 
 
 @app.route('/me')
 @login_required
-def me(user_id: str):
+def me(user_id: str, admin: bool):
     return render_template('me.html', user=rpc.core_client('get_user', {"user_id": user_id}))
 
 
@@ -79,6 +94,62 @@ def register():
         session['token'] = token
         return redirect(url_for('me'))
     return render_template('register.html', form=form)
+
+
+@app.route('/rooms', methods=['GET', 'POST'])
+@login_required
+def rooms(user_id: str, admin: bool):
+    rooms = rpc.core_client('get_rooms', {})
+    user = rpc.core_client('get_user', {"user_id": user_id})
+
+    return render_template('rooms.html', user=user, rooms=rooms)
+
+
+@app.route('/tables', methods=['POST', 'GET'])
+@login_required
+def tables(user_id: str, admin: bool):
+    room_id = request.args["room_id"]
+    user = rpc.core_client('get_user', {"user_id": user_id})
+    form = BookingForm()
+    tables = []
+    if form.validate_on_submit():
+        date = form.date.data
+        start_time = form.start_time.data
+        duration = form.duration.data
+        params = {
+            "room_id": int(room_id),
+            "date": date.strftime("%Y-%m-%d"),
+            "start_time": start_time.strftime("%H:%M:%S"),
+            "duration": int(duration)
+        }
+        tables = rpc.core_client('get_available_tables', params)
+        return render_template('tables.html', user=user, tables=tables, form=form)
+    return render_template('tables.html', user=user, form=form, tables=tables)
+
+
+@app.route('/book', methods=['POST'])
+@login_required
+def book(user_id: str, admin: bool):
+
+    params = {
+        "tables": [
+            {
+                "room_id": request.args["room_id"],
+                "table_id": request.args["table_id"],
+                "user_id": request.args["user_id"],
+                "teaType": request.args["teaType"],
+                "additionalInfo": request.args["additionalInfo"],
+                "time": request.args["date"] + " " + request.args["time"],
+                "duration": request.args["duration"]
+            }
+        ]
+    }
+
+    result = rpc.core_client('book_tables', params)
+    if result[0]["result"]:
+        return redirect(url_for('me'))
+    else:
+        return jsonify({"error": "Booking failed"})
 
 
 if __name__ == "__main__":

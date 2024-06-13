@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Доступные столы{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Доступные столы</h1>
+    <form method="post" action="{{ url_for('tables', room_id=request.args.get('room_id')) }}">
+        {{ form.hidden_tag() }}
+
+        <label for="date">{{ form.date.label }}</label>
+        {{ form.date(class="form-control") }}
+        {% if form.date.errors %}
+        <div class="error">{{ form.date.errors[0] }}</div>
+        {% endif %}
+
+        <label for="start_time">{{ form.start_time.label }}</label>
+        {{ form.start_time(class="form-control") }}
+        {% if form.start_time.errors %}
+        <div class="error">{{ form.start_time.errors[0] }}</div>
+        {% endif %}
+
+        <label for="duration">{{ form.duration.label }}</label>
+        {{ form.duration(class="form-control") }}
+        {% if form.duration.errors %}
+        <div class="error">{{ form.duration.errors[0] }}</div>
+        {% endif %}
+
+        {{ form.submit(class="contrast") }}
+    </form>
+
+    {% if tables %}
+    <section>
+        <h2>Список доступных столов</h2>
+        <ul>
+            {% for table in tables %}
+            <li>
+                Стол {{ table.id }}: {{ table.details }}
+                <form id="bookingForm" method="post" action="{{ url_for('book', table_id=table.id, room_id=request.args.get('room_id'), user_id=user.id, teaType='default', additionalInfo='blank', time=form.start_time.data, date=form.date.data, duration=form.duration.data ) }}">
+                    <input type="hidden" name="table_id" value="{{ table.id }}">
+                    <button type="submit" class="contrast">Забронировать</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+</section>
+{% endblock %}

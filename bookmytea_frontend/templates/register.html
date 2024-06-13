@@ -1,61 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
-    <style>
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+{% extends "base.html" %}
 
-        main {
-            width: 100%;
-            max-width: 400px;
-            padding: 2rem;
-            background-color: #1e1e1e;
-            border-radius: 0.5rem;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
+{% block title %}Регистрация{% endblock %}
 
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            margin-top: 1rem;
-        }
-
-        input[type="email"], input[type="password"] {
-            margin-top: 0.5rem;
-        }
-
-        input[type="submit"] {
-            margin-top: 1.5rem;
-        }
-    </style>
-</head>
-<body>
-<main>
+{% block content %}
+<section>
     <h1>Регистрация</h1>
-    <form method="POST">
+    <form method="post" action="{{ url_for('register') }}">
         {{ form.hidden_tag() }}
-        {{ form.email(size=32, class="form-control") }}
 
-        {{ form.password(size=32, class="form-control") }}
+        <label for="email">{{ form.email.label }}</label>
+        {{ form.email(size=32) }}
+        {% if form.email.errors %}
+            <div class="error">{{ form.email.errors[0] }}</div>
+        {% endif %}
 
-        {{ form.confirm_password(size=32, class="form-control") }}
+        <label for="password">{{ form.password.label }}</label>
+        {{ form.password(size=32) }}
+        {% if form.password.errors %}
+            <div class="error">{{ form.password.errors[0] }}</div>
+        {% endif %}
 
-        {{ form.submit(class="btn btn-primary") }}
+        <label for="confirm_password">{{ form.confirm_password.label }}</label>
+        {{ form.confirm_password(size=32) }}
+        {% if form.confirm_password.errors %}
+            <div class="error">{{ form.confirm_password.errors[0] }}</div>
+        {% endif %}
+
+        {{ form.submit(class="contrast") }}
     </form>
-</main>
-</body>
-</html>
+    <p>Уже есть аккаунт? <a href="{{ url_for('login') }}">Вход</a></p>
+</section>
+{% endblock %}

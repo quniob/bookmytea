@@ -11,6 +11,7 @@ class LoginResponse(BaseModel):
 
 class VerifyResponse(BaseModel):
     user_id: str
+    admin: str
 
 
 class RegistrationError(jsonrpc.BaseError):
@@ -56,8 +57,10 @@ def login_user(email: str, password: str) -> LoginResponse:
 
 @api_entrypoint.method(errors=[VerificationError])
 def verify_user(token: str) -> VerifyResponse:
-    user_id = verify_token(token)
+    payload = verify_token(token)
+    user_id = payload['user_id']
+    admin = payload['admin']
     if user_id:
-        return VerifyResponse(user_id=user_id)
+        return VerifyResponse(user_id=user_id, admin=admin)
     else:
         raise VerificationError

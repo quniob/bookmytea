@@ -1,8 +1,13 @@
 import datetime
-from datetime import timedelta
+import uuid
+from datetime import timedelta, time
 
 from bookmytea_core.app.db.models import *
 from pony.orm import db_session
+from bookmytea_core.app.db.redis_db import get_auto_confirm
+
+opening_time = time(10, 0)
+closing_time = time(21, 0)
 
 
 @db_session
@@ -11,8 +16,11 @@ def get_rooms() -> list[dict]:
 
 
 @db_session
-def add_room(name, desc) -> None:
-    Room(name=name, desc=desc)
+def add_room(id, name, desc, image_url) -> None:
+    if id:
+        Room(id=id, name=name, desc=desc, image=image_url)
+    else:
+        Room(name=name, desc=desc, image=image_url)
 
 
 @db_session
@@ -24,9 +32,14 @@ def add_table(room_id, number, capacity, value) -> None:
 def create_booking(room_id, table_id, user_id, with_master, additional_info, start_time, duration) -> bool:
     table = Table[table_id]
     user = User[user_id]
-    Booking(tables=table, user=user, with_master=with_master, additional_info=additional_info, start_time=start_time,
+    start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+    if get_auto_confirm():
+        status = "confirmed"
+    else:
+        status = "pending"
+    Booking(table=table, user=user, with_master=with_master, additional_info=additional_info, start_time=start_time,
             end_time=start_time + timedelta(hours=duration),
-            status='pending', confirmation_deadline=start_time)
+            status=status, confirmation_deadline=start_time)
     return True
 
 
@@ -42,11 +55,13 @@ def get_available_tables(room_id, booking_date, start_time, duration):
     available_tables = []
     room = Room[room_id]
     for table in room.tables:
-        query = select(b for b in Booking if table in b.tables)
-        query2 = query.filter(lambda b: b.start_time < end_time and b.end_time > start_time)
-        bookings = query2.first()
-        if bookings is None:
-            available_tables.append(table)
+        bookings = table.booking.select()
+        bookings = [booking for booking in bookings if booking.start_time <= start_time <= booking.end_time or
+                    booking.start_time <= end_time <= booking.end_time or
+                    start_time <= booking.start_time <= end_time or start_time <= booking.end_time <= end_time]
+        bookings = [booking for booking in bookings if booking.status != 'cancelled' or booking.status != 'completed']
+        if not bookings:
+            available_tables.append(table.to_dict())
     return available_tables
 
 
@@ -85,7 +100,14 @@ def get_user(user_id):
 
 
 if __name__ == '__main__':
-    #    print(add_room('test1', 'test1'))
-    #    print(add_table(1, 1, 1, 1))
-    #    print(create_booking(1, 1, 1, True, 'additionalInfo', datetime.now() + timedelta(hours=12), 1))
-    print(get_bookings())
+    add_room(1, 'Самурай', 'Зал в стиле японского милитаризма', 'https://gcdnb.pbrd.co/images/lIemefZGSwZo.png')
+    add_room(2, "Дзен", "Светлый зал для спокойных чаепитий", "https://i.imgur.com/VX2JewI.png")
+    add_table(1, 1, 4, 200)
+    add_table(1, 2, 4, 200)
+    add_table(1, 3, 4, 200)
+    add_table(1, 4, 6, 350)
+    add_table(2, 1, 4, 200)
+    add_table(2, 2, 4, 200)
+    add_table(2, 3, 4, 200)
+    print(get_rooms())
+    print(get_available_tables(1, "2021-09-01", "12:00:00", 2))

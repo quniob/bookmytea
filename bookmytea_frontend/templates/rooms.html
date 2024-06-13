@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Доступные залы{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Доступные залы</h1>
+    <div class="container">
+        {% for room in rooms %}
+        <article>
+            <img src="{{ room.image }}" alt="Изображение зала">
+            <h2>{{ room.name }}</h2>
+            <p>{{ room.desc }}</p>
+            <a href="{{ url_for('tables', room_id=room.id) }}" role="button" class="contrast">Забронировать стол</a>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

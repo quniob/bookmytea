@@ -1,55 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
-    <style>
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+{% extends "base.html" %}
 
-        main {
-            width: 100%;
-            max-width: 400px;
-            padding: 2rem;
-            background-color: #1e1e1e;
-            border-radius: 0.5rem;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
+{% block title %}Личный кабинет{% endblock %}
 
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            margin-top: 1rem;
-        }
-
-        input[type="email"], input[type="password"] {
-            margin-top: 0.5rem;
-        }
-
-        input[type="submit"] {
-            margin-top: 1.5rem;
-        }
-    </style>
-</head>
-<body>
-<main>
-    <h1>Ваш айди</h1>
-    <p>{{ user.id }}</p>
-    <h1>Ваша почта</h1>
-    <p>{{ user.email }}</p>
-    <button onclick="location.href = '/logout'">Выход</button>
-</main>
-</body>
-</html>
+{% block content %}
+<section>
+    <h1>Личный кабинет</h1>
+    <div>
+        <img src="https://avatar.iran.liara.run/public/40" alt="Avatar" class="profile-avatar">
+        <p><a href="https://t.me/bookmytea_bot?start={{user.id}}">Привязать телеграм</a></p>
+        <p>Email: {{ user.email }}</p>
+        <p>Telegram: {{ user.telegram }}</p>
+    </div>
+    <div>
+        <a href="{{ url_for('index') }}" role="button" class="contrast">Сменить пароль</a>
+        <a href="{{ url_for('rooms') }}" role="button">Забронировать столик</a>
+    </div>
+</section>
+{% endblock %}

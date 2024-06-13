@@ -11,7 +11,8 @@ def register(email: str, password: str, uuid: str):
     hashed_password = hash_password(password).decode('utf-8')
     existing_user = User.get(email=email)
     if not existing_user:
-        User(id=UUID(uuid), email=email, password=hashed_password)
+        admin = email == settings.ADMIN_MAIL
+        User(id=UUID(uuid), email=email, password=hashed_password, admin=admin)
         return True
     else:
         return False
@@ -23,6 +24,7 @@ def login(email, password):
     if user and check_password(user.password, password):
         payload = {
             'uuid': str(user.id),
+            'admin': str(user.admin),
             'exp': datetime.now() + timedelta(hours=6)
         }
         token = jwt.encode(payload, settings.JWT_SECRET, algorithm='HS256')
@@ -34,6 +36,6 @@ def login(email, password):
 def verify_token(token):
     try:
         payload = jwt.decode(token, settings.JWT_SECRET, algorithms=['HS256'])
-        return payload['uuid']
+        return {'user_id': payload['uuid'], 'admin': payload['admin']}
     except jwt.ExpiredSignatureError:
         return None

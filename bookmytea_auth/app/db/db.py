@@ -9,6 +9,7 @@ db = Database()
 class User(db.Entity):
     id = PrimaryKey(UUID)
     email = Required(str, unique=True)
+    admin = Required(bool, default=False)
     password = Required(str)
 
 
