@@ -44,6 +44,6 @@ jobs:
     - name: Сборка и пуш микросервиса integrations
       uses: docker/build-push-action@v2
       with:
-        context: ./path/to/dockerfile4
+        context: ./bookmytea_integrations/
         push: true
         tags: registry.onmyneck.online/integrations:latest
