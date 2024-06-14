@@ -1,9 +1,9 @@
-from jose import jwt
+import jwt
 from uuid import UUID
 from datetime import datetime, timedelta
 from pony.orm import db_session
-from bookmytea_auth.app.db.db import User, hash_password, check_password
-from bookmytea_auth.app.db import settings
+from app.db.db import User, hash_password, check_password
+from app.db import settings
 
 
 @db_session

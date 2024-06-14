@@ -32,17 +32,19 @@
     {% if tables %}
     <section>
         <h2>Список доступных столов</h2>
-        <ul>
+        <div class="grid">
             {% for table in tables %}
-            <li>
-                Стол {{ table.id }}: {{ table.details }}
-                <form id="bookingForm" method="post" action="{{ url_for('book', table_id=table.id, room_id=request.args.get('room_id'), user_id=user.id, teaType='default', additionalInfo='blank', time=form.start_time.data, date=form.date.data, duration=form.duration.data ) }}">
+            <div class="card">
+                <h3>Стол {{ table.id }}</h3>
+                <p>{{ table.details }}</p>
+                <form id="bookingForm" method="post"
+                      action="{{ url_for('book', table_id=table.id, room_id=request.args.get('room_id'), user_id=user.id, teaType='default', additionalInfo='blank', time=form.start_time.data, date=form.date.data, duration=form.duration.data ) }}">
                     <input type="hidden" name="table_id" value="{{ table.id }}">
                     <button type="submit" class="contrast">Забронировать</button>
                 </form>
-            </li>
+            </div>
             {% endfor %}
-        </ul>
+        </div>
     </section>
     {% endif %}
 </section>

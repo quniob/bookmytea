@@ -1,6 +1,6 @@
 from telebot import TeleBot
-from bookmytea_integrations.app.settings import BOT_TOKEN
-from bookmytea_integrations.app.db import *
+from app.settings import BOT_TOKEN
+from app.db import *
 
 
 bot = TeleBot(BOT_TOKEN)

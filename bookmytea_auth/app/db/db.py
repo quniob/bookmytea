@@ -1,6 +1,6 @@
 from pony.orm import Database, Required, PrimaryKey
 import bcrypt
-from bookmytea_auth.app.db import settings
+from app.db import settings
 from uuid import UUID
 
 db = Database()

@@ -33,7 +33,53 @@ services:
     volumes:
       - redis:/data
 
+  core:
+    build:
+      context: ./bookmytea_core
+    container_name: core
+    depends_on:
+      - postgres_core
+      - redis
+    env_file:
+      - bookmytea_core/app/.env
+
+  auth:
+    build:
+      context: ./bookmytea_auth
+    container_name: auth
+    depends_on:
+      - postgres_auth
+      - redis
+    env_file:
+      - bookmytea_auth/app/.env
+
+  integrations:
+    build:
+      context: ./bookmytea_integrations
+    container_name: integrations
+    depends_on:
+      - core
+      - auth
+      - redis
+    env_file:
+      - bookmytea_integrations/app/.env
+    restart: on-failure
+
+  frontend:
+    build:
+      context: ./bookmytea_frontend
+    container_name: frontend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - core
+      - auth
+      - integrations
+    env_file:
+      - bookmytea_frontend/app/.env
+
 volumes:
   postgres_core:
   postgres_auth:
   redis:
+  minio:

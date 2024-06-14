@@ -1,0 +1,11 @@
+bcrypt
+pony
+python-dotenv
+pydantic
+uvicorn
+redis
+pytest
+requests
+jsonrpcclient
+flask
+wtforms

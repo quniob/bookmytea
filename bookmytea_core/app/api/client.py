@@ -3,7 +3,8 @@ from typing import Optional
 from uuid import UUID
 
 import fastapi_jsonrpc as jsonrpc
-import bookmytea_core.app.db.db as db
+import app.db.db as db
+import app.db.redis_db as redis_db
 from pydantic import BaseModel
 
 
@@ -100,3 +101,11 @@ def add_user(uuid: UUID, email: str) -> bool:
 @client_entrypoint.method()
 def cancel_booking(booking_id: int) -> bool:
     return db.cancel_booking(booking_id)
+
+
+@client_entrypoint.method()
+def check_telegram_user(user_id: str) -> str:
+    telegram = redis_db.check_telegram_user(user_id)
+    if not telegram:
+        return "False"
+    return redis_db.check_telegram_user(user_id)

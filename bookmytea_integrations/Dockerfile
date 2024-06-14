@@ -1,4 +1,13 @@
-FROM ubuntu:latest
-LABEL authors="qu"
+FROM python:3.9
 
-ENTRYPOINT ["top", "-b"]
+WORKDIR /app
+
+COPY . /app
+
+ENV PYTHONPATH=/app
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+EXPOSE 5000
+
+CMD ["python", "./app/bot.py"]

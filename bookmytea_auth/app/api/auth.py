@@ -2,7 +2,7 @@ from uuid import UUID
 
 import fastapi_jsonrpc as jsonrpc
 from pydantic import BaseModel
-from bookmytea_auth.app.core.jwt import register, login, verify_token
+from app.core.core_jwt import register, login, verify_token
 
 
 class LoginResponse(BaseModel):

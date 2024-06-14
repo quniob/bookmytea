@@ -1,10 +1,14 @@
+import os
 from uuid import UUID
+from dotenv import load_dotenv, find_dotenv
 
 import requests
 from jsonrpcclient import request, parse, Ok, Error
 
-AUTH_HOST = "localhost:5000"
-CORE_HOST = "localhost:5001"
+load_dotenv(find_dotenv())
+
+AUTH_HOST = os.environ.get("AUTH_HOST")
+CORE_HOST = os.environ.get("CORE_HOST")
 
 
 def core_client(method_name: str, params: dict) -> dict[str: str]:

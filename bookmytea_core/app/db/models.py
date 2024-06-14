@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from bookmytea_core.app.db import settings
+from app.db import settings
 from enum import Enum
 from uuid import UUID
 

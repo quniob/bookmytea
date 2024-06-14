@@ -2,9 +2,9 @@ import datetime
 import uuid
 from datetime import timedelta, time
 
-from bookmytea_core.app.db.models import *
+from app.db.models import *
 from pony.orm import db_session
-from bookmytea_core.app.db.redis_db import get_auto_confirm
+from app.db.redis_db import get_auto_confirm
 
 opening_time = time(10, 0)
 closing_time = time(21, 0)

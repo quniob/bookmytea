@@ -3,8 +3,8 @@ from typing import Optional
 from uuid import UUID
 
 import fastapi_jsonrpc as jsonrpc
-import bookmytea_core.app.db.db as db
-import bookmytea_core.app.db.redis_db as redis
+import app.db.db as db
+import app.db.redis_db as redis
 from pydantic import BaseModel
 
 admin_entrypoint = jsonrpc.Entrypoint('/api/v1/jsonrpc/admin')

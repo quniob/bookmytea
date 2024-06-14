@@ -1,14 +1,14 @@
-from datetime import datetime, timedelta
-
-from flask import Flask, render_template, redirect, url_for, session, jsonify, request
+from flask import Flask, render_template, redirect, url_for, session, jsonify, request, flash
 import os
-import rpc
-from forms import RegisterForm, LoginForm, BookingForm
+import app.rpc as rpc
+from app.forms import RegisterForm, LoginForm, BookingForm
 from functools import wraps
 from uuid import uuid4
+from dotenv import load_dotenv, find_dotenv
 
 app = Flask(__name__, template_folder=os.path.relpath('../templates'))
-app.config['SECRET_KEY'] = 'test'
+load_dotenv(find_dotenv())
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 
 
 def login_required(f):
@@ -22,6 +22,7 @@ def login_required(f):
             admin = auth_response['admin']
         except Exception as e:
             session.pop('token', None)
+            flash("Сессия устарела либо вы не вошли в аккаунт", "error")
             return redirect(url_for('login'))
         return f(user_id, admin == 'true', *args, **kwargs)
 
@@ -41,6 +42,7 @@ def login():
             user_id = rpc.auth("verify_user", {"token": session['token']})
         except Exception as e:
             session.pop('token', None)
+            flash("Сессия устарела либо вы не вошли в аккаунт", "error")
             return redirect(url_for('login'))
         return redirect(url_for('me'))
     if form.validate_on_submit():
@@ -51,6 +53,7 @@ def login():
         try:
             token = rpc.auth('login_user', params)["token"]
         except Exception:
+            flash("Неправильная почта или пароль", "error")
             return redirect(url_for('login'))
         session['token'] = token
         return redirect(url_for('me'))
@@ -67,7 +70,10 @@ def logout(user_id: str, admin: bool):
 @app.route('/me')
 @login_required
 def me(user_id: str, admin: bool):
-    return render_template('me.html', user=rpc.core_client('get_user', {"user_id": user_id}))
+    telegram = rpc.core_client('check_telegram_user', {"user_id": user_id})
+    if telegram == "False":
+        telegram = False
+    return render_template('me.html', user=rpc.core_client('get_user', {"user_id": user_id}), telegram=telegram)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -85,6 +91,7 @@ def register():
         try:
             token = rpc.auth('register_user', params)["token"]
         except Exception:
+            flash("Пользователь с такой почтой уже существует", "error")
             return redirect(url_for('register'))
         user = {
             "email": form.email.data,
@@ -92,6 +99,7 @@ def register():
         }
         rpc.core_client("add_user", user)
         session['token'] = token
+        flash("Вы успешно зарегистрировались", "success")
         return redirect(url_for('me'))
     return render_template('register.html', form=form)
 
@@ -101,13 +109,18 @@ def register():
 def rooms(user_id: str, admin: bool):
     rooms = rpc.core_client('get_rooms', {})
     user = rpc.core_client('get_user', {"user_id": user_id})
-
     return render_template('rooms.html', user=user, rooms=rooms)
 
 
 @app.route('/tables', methods=['POST', 'GET'])
 @login_required
 def tables(user_id: str, admin: bool):
+    telegram = rpc.core_client('check_telegram_user', {"user_id": user_id})
+    if telegram == "False":
+        telegram = False
+    if not telegram:
+        flash("Пожалуйста, привяжите аккаунт Telegram для возможности бронировать столы", "error")
+        return redirect(url_for('me'))
     room_id = request.args["room_id"]
     user = rpc.core_client('get_user', {"user_id": user_id})
     form = BookingForm()
@@ -130,7 +143,11 @@ def tables(user_id: str, admin: bool):
 @app.route('/book', methods=['POST'])
 @login_required
 def book(user_id: str, admin: bool):
-
+    telegram = rpc.core_client('check_telegram_user', {"user_id": user_id})
+    if telegram == "False":
+        telegram = False
+    if not telegram:
+        flash("Пожалуйста, привяжите аккаунт Telegram для возможности бронировать столы", "error")
     params = {
         "tables": [
             {
@@ -147,9 +164,11 @@ def book(user_id: str, admin: bool):
 
     result = rpc.core_client('book_tables', params)
     if result[0]["result"]:
+        flash("Успешно", "success")
         return redirect(url_for('me'))
     else:
-        return jsonify({"error": "Booking failed"})
+        flash("Ошибка бронирования", "error")
+        return redirect(url_for('me'))
 
 
 if __name__ == "__main__":

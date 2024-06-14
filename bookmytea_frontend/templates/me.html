@@ -7,9 +7,13 @@
     <h1>Личный кабинет</h1>
     <div>
         <img src="https://avatar.iran.liara.run/public/40" alt="Avatar" class="profile-avatar">
+        {% if not telegram %}
         <p><a href="https://t.me/bookmytea_bot?start={{user.id}}">Привязать телеграм</a></p>
+        {% endif %}
         <p>Email: {{ user.email }}</p>
-        <p>Telegram: {{ user.telegram }}</p>
+        {% if telegram %}
+        <p>Telegram: {{ telegram }}</p>
+        {% endif %}
     </div>
     <div>
         <a href="{{ url_for('index') }}" role="button" class="contrast">Сменить пароль</a>
