@@ -1,4 +1,3 @@
-bcrypt
 pony
 python-dotenv
 pydantic
@@ -6,9 +5,6 @@ uvicorn
 redis
 pytest
 requests
-jsonrpcclient
-flask
-wtforms
 pytelegrambotapi
 fastapi-jsonrpc
 psycopg2

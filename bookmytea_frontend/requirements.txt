@@ -1,7 +1,4 @@
-bcrypt
-pony
 python-dotenv
-pydantic
 gunicorn
 redis
 pytest
@@ -10,5 +7,4 @@ jsonrpcclient
 flask
 wtforms
 pytelegrambotapi
-fastapi-jsonrpc
 flask_wtf
